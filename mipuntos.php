@@ -26,3 +26,19 @@ class mipuntos extends Module
         $this->description = $this->trans('Permite asignar puntos de fidelidad a los clientes después de una compra');
         $this->confirmUNinstall = $this->trans('¿Estás seguro que deseas desinstalar el módulo?');
     }
+    public function install()
+    {
+        if (! parent::install())
+        {
+            return false;
+        }
+        $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder'];
+        foreach ($hooks_mipuntos as $hook)
+        {
+            if (! $this->registerHook($hook))
+            {
+                return false;
+            }
+        }
+    }
+}
