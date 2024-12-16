@@ -26,11 +26,22 @@ class mipuntos extends Module
         $this->description = $this->trans('Permite asignar puntos de fidelidad a los clientes después de una compra');
         $this->confirmUNinstall = $this->trans('¿Estás seguro que deseas desinstalar el módulo?');
     }
+
+    // Métodos de instalación
     public function install()
     {
         if (! parent::install())
         {
             return false;
+        }
+        $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder'];
+
+        foreach ($hooks_mipuntos as $hook)
+        {
+            if (! $this->registerHook($hook))
+            {
+                return false;
+            }
         }
 
         $defaultConfigurations = [
@@ -43,16 +54,9 @@ class mipuntos extends Module
                 return false;
             }
         }
-
-        $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder'];
-        foreach ($hooks_mipuntos as $hook)
-        {
-            if (! $this->registerHook($hook))
-            {
-                return false;
-            }
-        }
     }
+
+    // Método de desinstalación
     public function uninstall()
     {
         if(!parent::uninstall())
@@ -67,4 +71,35 @@ class mipuntos extends Module
             }
         }
     }
+
+
+
+    // Definición de Hooks
+
+    public function hookActionValidateOrder($params)
+    {
+        // Lógica para capturar la orden y asignar puntos
+        $order = $params['order']; // Pedido validado
+        $customer = $order->id_customer; // Cliente asociado al pedido
+
+        // Calcular puntos (ejemplo: 1 punto por cada 10€)
+        $points = floor($order->total_paid / 10);
+
+        // Aquí podemos guardar los puntos (implementaremos en la próxima etapa)
+    }
+
+    public function hookDisplayAdminOrder($params)
+    {
+        // Lógica para mostrar los puntos del cliente en el pedido
+        $order = new Order($params['id_order']);
+        $customerId = $order->id_customer;
+
+        // Obtener puntos (implementaremos en la próxima etapa)
+        $points = 0; // Este valor será dinámico en el futuro
+
+        return "Puntos acumulados: $points";
+    }
+
+
+
 }
