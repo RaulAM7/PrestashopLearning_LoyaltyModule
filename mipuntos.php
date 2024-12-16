@@ -7,6 +7,7 @@ if (!defined('_PS_VERSION_')) {
 
 class mipuntos extends Module
 {
+    // 0.- MÉTODO CONSTRUCTOR
     public function __construct()
     {
         $this->name = 'mipuntos';
@@ -27,7 +28,7 @@ class mipuntos extends Module
         $this->confirmUNinstall = $this->trans('¿Estás seguro que deseas desinstalar el módulo?');
     }
 
-    // Métodos de instalación
+    // 1.- MÉTODO DE INSTALACIÓN
     public function install()
     {
         if (! parent::install())
@@ -56,7 +57,7 @@ class mipuntos extends Module
         }
     }
 
-    // Método de desinstalación
+    // 2.- MÉTODO DE DESINSTALACIÓN
     public function uninstall()
     {
         if(!parent::uninstall())
@@ -72,10 +73,59 @@ class mipuntos extends Module
         }
     }
 
-
-
-    // Definición de Hooks
-
+    // 3.- PÁGINA DE CONFIGURACIÓN INICIAL EN EL BACK OFFICE
+    public function getContent()
+    {
+        // Mensajes de confirmación
+        $output = '';
+        if (Tools::isSubmit('submitMipuntosConfig')) {
+            $defaultPoints = (int)Tools::getValue('MIPUNTOS_DEFAULT_POINTS');
+            Configuration::updateValue('MIPUNTOS_DEFAULT_POINTS', $defaultPoints);
+            $output .= $this->displayConfirmation($this->l('Configuración actualizada.'));
+        }
+    
+        // Renderiza el formulario
+        return $output . $this->renderForm();
+    }
+    public function renderForm()
+    {
+        // Definimos los campos del formulario
+        $fieldsForm = [
+            'form' => [
+                'legend' => [
+                    'title' => $this->l('Configuración del Módulo'),
+                    'icon' => 'icon-cogs',
+                ],
+                'input' => [
+                    [
+                        'type' => 'text',
+                        'label' => $this->l('Puntos predeterminados por pedido'),
+                        'name' => 'MIPUNTOS_DEFAULT_POINTS',
+                        'required' => true,
+                        'desc' => $this->l('Número de puntos asignados por defecto si no se calcula dinámicamente.'),
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->l('Guardar'),
+                ],
+            ],
+        ];
+    
+        // Datos por defecto
+        $helper = new HelperForm();
+        $helper->module = $this;
+        $helper->name_controller = $this->name;
+        $helper->identifier = $this->identifier;
+        $helper->submit_action = 'submitMipuntosConfig';
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->fields_value['MIPUNTOS_DEFAULT_POINTS'] = Configuration::get('MIPUNTOS_DEFAULT_POINTS', 10); // Valor por defecto: 10
+    
+        return $helper->generateForm([$fieldsForm]);
+    }
+    
+    
+    // 4.- DEFINICIÓN DE HOOKS
     public function hookActionValidateOrder($params)
     {
         // Lógica para capturar la orden y asignar puntos
