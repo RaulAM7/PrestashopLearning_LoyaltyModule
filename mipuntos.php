@@ -32,6 +32,18 @@ class mipuntos extends Module
         {
             return false;
         }
+
+        $defaultConfigurations = [
+            'NEW_MODULE_CONFIG'=> "VALUE",
+        ];
+        foreach ($defaultConfigurations as $key => $value)
+        {
+            if (!Configuration::updateValue($key, $value))
+            {
+                return false;
+            }
+        }
+        
         $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder'];
         foreach ($hooks_mipuntos as $hook)
         {
