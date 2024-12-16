@@ -43,11 +43,25 @@ class mipuntos extends Module
                 return false;
             }
         }
-        
+
         $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder'];
         foreach ($hooks_mipuntos as $hook)
         {
             if (! $this->registerHook($hook))
+            {
+                return false;
+            }
+        }
+    }
+    public function uninstall()
+    {
+        if(!parent::uninstall())
+        {
+            return false;
+        }
+        foreach($defaultConfigurations as $configuration)
+        {
+            if (!Configuration::deleteByName($configuration))
             {
                 return false;
             }
