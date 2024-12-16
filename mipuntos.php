@@ -55,6 +55,8 @@ class mipuntos extends Module
                 return false;
             }
         }
+
+        return true;
     }
 
     // 2.- MÉTODO DE DESINSTALACIÓN
@@ -64,6 +66,9 @@ class mipuntos extends Module
         {
             return false;
         }
+        $defaultConfigurations = [
+            'NEW_MODULE_CONFIG'=> "VALUE",
+        ];
         foreach($defaultConfigurations as $configuration)
         {
             if (!Configuration::deleteByName($configuration))
@@ -124,7 +129,7 @@ class mipuntos extends Module
         return $helper->generateForm([$fieldsForm]);
     }
     
-    
+
     // 4.- DEFINICIÓN DE HOOKS
     public function hookActionValidateOrder($params)
     {
