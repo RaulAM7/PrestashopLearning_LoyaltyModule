@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__FILE__) . '/classes/LoyaltyPoints.php';
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -71,6 +72,19 @@ class mipuntos extends Module
             return false;
         }
 
+        // BACKOFFICE ADMIN CONTROLLER
+        $tab = new Tab();
+        $tab->class_name = 'AdminLoyaltyPoints';
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentModules');
+        $tab->module = $this->name;
+        $tab->name = [];
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Gestionar Puntos';
+        }
+        $tab->add();
+
+
+
         return true;
     }
 
@@ -96,6 +110,13 @@ class mipuntos extends Module
             return false;
         }
         
+        // BACKOFFICE ADMIN CONTROLLER
+        $id_tab = (int)Tab::getIdFromClassName('AdminLoyaltyPoints');
+        if ($id_tab) {
+            $tab = new Tab($id_tab);
+            $tab->delete();
+        }
+
         return true;
     }
 
@@ -154,14 +175,45 @@ class mipuntos extends Module
     // 4.- DEFINICIÓN DE HOOKS
     public function hookActionValidateOrder($params)
     {
-        // Lógica para capturar la orden y asignar puntos
+        // Obtener la orden validada y el cliente
         $order = $params['order']; // Pedido validado
-        $customer = $order->id_customer; // Cliente asociado al pedido
+        $customerId = $order->id_customer; // Cliente asociado al pedido
+
+        // Comprobar si el cliente existe
+        if (!$customerId)
+        {
+            return;
+        }
 
         // Calcular puntos (ejemplo: 1 punto por cada 10€)
         $points = floor($order->total_paid / 10);
 
-        // Aquí podemos guardar los puntos (implementaremos en la próxima etapa)
+        // Guardar o actualizar los puntos del cliente en la base de datos
+        $loyaltyPoints = new LoyaltyPoints();
+
+        // Buscar si ya existen puntos para este cliente
+        $existingPoints = Db::getInstance()->getValue(
+        'SELECT points FROM ' . _DB_PREFIX_ . 'loyalty_points WHERE id_customer = ' . (int)$customerId
+        );
+
+        if ($existingPoints !== false) 
+        {
+            // Actualizar puntos existentes
+            $totalPoints = (int)$existingPoints + $points;
+            Db::getInstance()->execute(
+                'UPDATE ' . _DB_PREFIX_ . 'loyalty_points 
+                 SET points = ' . (int)$totalPoints . ', last_updated = "' . date('Y-m-d H:i:s') . '" 
+                 WHERE id_customer = ' . (int)$customerId
+            );
+        } 
+        else 
+        {
+            // Insertar nuevo registro
+            $loyaltyPoints->id_customer = $customerId;
+            $loyaltyPoints->points = $points;
+            $loyaltyPoints->last_updated = date('Y-m-d H:i:s');
+            $loyaltyPoints->add();
+        }
     }
 
     public function hookDisplayAdminOrder($params)
