@@ -46,7 +46,7 @@ class mipuntos extends Module
         }
 
         $defaultConfigurations = [
-            'NEW_MODULE_CONFIG'=> "VALUE",
+            'MIPUNTOS_DEFAULT_POINTS'=> 0,
         ];
         foreach ($defaultConfigurations as $key => $value)
         {
@@ -54,6 +54,21 @@ class mipuntos extends Module
             {
                 return false;
             }
+        }
+
+        // MODELO DE DATOS - Creación de la tabla para almacenar puntos de fidelidad
+        $sql = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "loyalty_points` (
+            `id_loyalty_points` INT(11) NOT NULL AUTO_INCREMENT,
+            `id_customer` INT(11) NOT NULL,
+            `points` INT(11) NOT NULL DEFAULT 0,
+            `last_updated` DATETIME NOT NULL,
+            PRIMARY KEY (`id_loyalty_points`),
+            UNIQUE KEY `id_customer` (`id_customer`)
+        ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
+    
+        if (!Db::getInstance()->execute($sql)) 
+        {
+            return false;
         }
 
         return true;
@@ -67,7 +82,7 @@ class mipuntos extends Module
             return false;
         }
         $defaultConfigurations = [
-            'NEW_MODULE_CONFIG'=> "VALUE",
+            'MIPUNTOS_DEFAULT_POINTS',
         ];
         foreach($defaultConfigurations as $configuration)
         {
@@ -76,6 +91,12 @@ class mipuntos extends Module
                 return false;
             }
         }
+        $sql = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "loyalty_points`";
+        if (!Db::getInstance()->execute($sql)) {
+            return false;
+        }
+        
+        return true;
     }
 
     // 3.- PÁGINA DE CONFIGURACIÓN INICIAL EN EL BACK OFFICE
