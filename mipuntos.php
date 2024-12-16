@@ -24,8 +24,8 @@ class mipuntos extends Module
         
         parent::__construct();
         
-        $this->displayName = $this->trans('Puntos de Fidelidad', [],'Modules.mipuntos.Admin');
-        $this->description = $this->trans('Permite asignar puntos de fidelidad a los clientes después de una compra');
+        $this->displayName = $this->trans('Puntos de Fidelidad', [], 'Modules.mipuntos.Admin');
+        $this->description = $this->trans('Gestiona los puntos de fidelidad de tus clientes', [], 'Modules.mipuntos.Admin');        
         $this->confirmUNinstall = $this->trans('¿Estás seguro que deseas desinstalar el módulo?');
     }
 
@@ -72,20 +72,38 @@ class mipuntos extends Module
             return false;
         }
 
-        // BACKOFFICE ADMIN CONTROLLER
+        if (!$this->installAdminController())
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
+    // BACKOFFICE ADMIN CONTROLLER -> Especificamos donde va a aparecer en el Back Office
+    public function installAdminController()
+    {
         $tab = new Tab();
         $tab->class_name = 'AdminLoyaltyPoints';
-        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentModules');
+    
+        // Asignar la pestaña a "Clientes"
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentCustomer');
+        
+        // Fallback en caso de que no encuentre la pestaña
+        if (!$tab->id_parent) {
+            $tab->id_parent = 0;
+        }
+    
         $tab->module = $this->name;
+        $tab->active = 1;
+        $tab->position = 99; // Posición en el menú
+    
         $tab->name = [];
         foreach (Language::getLanguages(true) as $lang) {
             $tab->name[$lang['id_lang']] = 'Gestionar Puntos';
         }
-        $tab->add();
-
-
-
-        return true;
+    
+        return $tab->add();
     }
 
     // 2.- MÉTODO DE DESINSTALACIÓN
