@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Oferta de Doble Puntos!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #2cd8d5;
+            text-align: center;
+            padding: 1rem;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+        .content {
+            padding: 2rem;
+            text-align: center;
+        }
+        .cta {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #ff3860;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .cta:hover {
+            background-color: #2cd8d5;
+        }
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            background: #f1f1f1;
+            font-size: 0.9rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            ¡Doble Puntos de Fidelidad!
+        </div>
+        <div class="content">
+            <p>Gracias por registrarte en nuestra newsletter.</p>
+            <p>
+                Como parte de nuestra oferta especial, <strong>obtendrás el DOBLE de puntos</strong> por cada compra realizada durante el próximo año.
+            </p>
+            <a href="http://localhost/prestashop-projects/ps_devlearning/index.php?controller=my-account" class="cta">Consulta tus puntos</a>
+        </div>
+        <div class="footer">
+            Si tienes alguna pregunta, no dudes en <a href="{$urls.pages.contact}">contactarnos</a>.
+        </div>
+    </div>
+</body>
+</html>

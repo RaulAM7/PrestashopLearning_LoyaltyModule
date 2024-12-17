@@ -1,0 +1,12 @@
+¡Enhorabuena!
+
+Hola {name},
+
+Gracias por registrarte en nuestra newsletter. A partir de ahora, ganarás el DOBLE de puntos de fidelidad en todas tus compras durante 1 año.
+
+Tu correo: {email}
+Número de contacto: {phone}
+
+¡Visítanos y comienza a ganar puntos!
+
+{shop_url}

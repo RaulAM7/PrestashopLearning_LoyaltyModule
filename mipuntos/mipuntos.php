@@ -36,7 +36,7 @@ class mipuntos extends Module
         {
             return false;
         }
-        $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder', 'displayCustomerAccount'];
+        $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder', 'displayCustomerAccount', 'displayHeader', 'displayLoyaltyOffer'];
 
         foreach ($hooks_mipuntos as $hook)
         {
@@ -236,11 +236,40 @@ class mipuntos extends Module
 
     public function hookDisplayCustomerAccount()
     {
-        return '<li>
-            <a href="' . $this->context->link->getModuleLink('mipuntos', 'loyaltypoints') . '">
+        return '
+        <a class="col-lg-4 col-md-6 col-sm-6 col-xs-12" id="loyalty-points-link" href="' . $this->context->link->getModuleLink('mipuntos', 'loyaltypoints') . '">
+            <span class="link-item">
+                <i class="material-icons">&#xe8e8;</i> <!-- Icono de Material Icons -->
                 ' . $this->l('Mis Puntos de Fidelidad') . '
-            </a>
-        </li>';
+            </span>
+        </a>';
+    }
+
+    public function hookDisplayHeader()
+    {
+        $this->context->controller->registerStylesheet(
+            'mipuntos-loyaltypoints-css',
+            'modules/' . $this->name . '/views/css/loyaltypoints.css',
+            ['media' => 'all', 'priority' => 150]
+        );
+    }
+
+    public function hookDisplayLoyaltyOffer()
+    {
+        $this->context->smarty->assign([
+            'loyalty_points_offer' => [
+                'title' => '¡Gana puntos de fidelidad!',
+                'description' => 'Por cada 10€ gastados, ganarás 1 punto de fidelidad. ¡Acumula puntos y obtén descuentos en tus próximas compras!',
+                'benefits' => [
+                    'Descuentos exclusivos para clientes frecuentes.',
+                    'Sistema sencillo de acumulación y canje.',
+                    'Mayor ahorro en tus compras futuras.',
+                ],
+                'cta' => 'Empieza a ganar puntos hoy mismo.'
+            ]
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/front/loyalty_offer.tpl');
     }
 
 

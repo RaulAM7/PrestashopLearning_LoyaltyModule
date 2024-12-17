@@ -1,0 +1,49 @@
+.loyalty-points-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.loyalty-points-card .card {
+    background: #f7f9fc;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.loyalty-points-card .card:hover {
+    transform: translateY(-5px);
+}
+
+.icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #24b9d7;
+    color: #fff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+}
+
+.loyalty-points-card .loyalty-icon {
+    font-size: 2rem;
+}
+
+.card-title {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #232323;
+    margin-bottom: 0.5rem;
+}
+
+.card-points {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.1rem;
+    color: #7a7a7a;
+}
