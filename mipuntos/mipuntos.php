@@ -36,7 +36,7 @@ class mipuntos extends Module
         {
             return false;
         }
-        $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder'];
+        $hooks_mipuntos = ['actionValidateOrder', 'displayAdminOrder', 'displayCustomerAccount'];
 
         foreach ($hooks_mipuntos as $hook)
         {
@@ -141,7 +141,6 @@ class mipuntos extends Module
     // 3.- PÁGINA DE CONFIGURACIÓN INICIAL EN EL BACK OFFICE
     public function getContent()
     {
-        // Mensajes de confirmación
         $output = '';
         if (Tools::isSubmit('submitMipuntosConfig')) {
             $defaultPoints = (int)Tools::getValue('MIPUNTOS_DEFAULT_POINTS');
@@ -149,12 +148,10 @@ class mipuntos extends Module
             $output .= $this->displayConfirmation($this->l('Configuración actualizada.'));
         }
     
-        // Renderiza el formulario
         return $output . $this->renderForm();
     }
     public function renderForm()
     {
-        // Definimos los campos del formulario
         $fieldsForm = [
             'form' => [
                 'legend' => [
@@ -193,30 +190,24 @@ class mipuntos extends Module
     // 4.- DEFINICIÓN DE HOOKS
     public function hookActionValidateOrder($params)
     {
-        // Obtener la orden validada y el cliente
-        $order = $params['order']; // Pedido validado
-        $customerId = $order->id_customer; // Cliente asociado al pedido
+        $order = $params['order']; 
+        $customerId = $order->id_customer; 
 
-        // Comprobar si el cliente existe
         if (!$customerId)
         {
             return;
         }
 
-        // Calcular puntos (ejemplo: 1 punto por cada 10€)
         $points = floor($order->total_paid / 10);
 
-        // Guardar o actualizar los puntos del cliente en la base de datos
         $loyaltyPoints = new LoyaltyPoints();
 
-        // Buscar si ya existen puntos para este cliente
         $existingPoints = Db::getInstance()->getValue(
         'SELECT points FROM ' . _DB_PREFIX_ . 'loyalty_points WHERE id_customer = ' . (int)$customerId
         );
 
         if ($existingPoints !== false) 
         {
-            // Actualizar puntos existentes
             $totalPoints = (int)$existingPoints + $points;
             Db::getInstance()->execute(
                 'UPDATE ' . _DB_PREFIX_ . 'loyalty_points 
@@ -226,7 +217,6 @@ class mipuntos extends Module
         } 
         else 
         {
-            // Insertar nuevo registro
             $loyaltyPoints->id_customer = $customerId;
             $loyaltyPoints->points = $points;
             $loyaltyPoints->last_updated = date('Y-m-d H:i:s');
@@ -236,16 +226,22 @@ class mipuntos extends Module
 
     public function hookDisplayAdminOrder($params)
     {
-        // Lógica para mostrar los puntos del cliente en el pedido
         $order = new Order($params['id_order']);
         $customerId = $order->id_customer;
 
-        // Obtener puntos (implementaremos en la próxima etapa)
-        $points = 0; // Este valor será dinámico en el futuro
+        $points = 0; 
 
         return "Puntos acumulados: $points";
     }
 
+    public function hookDisplayCustomerAccount()
+    {
+        return '<li>
+            <a href="' . $this->context->link->getModuleLink('mipuntos', 'loyaltypoints') . '">
+                ' . $this->l('Mis Puntos de Fidelidad') . '
+            </a>
+        </li>';
+    }
 
 
 }
